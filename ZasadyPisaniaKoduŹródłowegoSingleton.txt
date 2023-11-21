@@ -1,0 +1,215 @@
+using System;
+
+namespace Calculator.ConsoleApp
+{
+    // Klasa bazowa reprezentująca kalkulator dla funkcji kwadratowej
+    class DerivativeCalculator
+    {
+        protected double a;
+        protected double b;
+        protected double c;
+
+        // Metoda ustawiająca współczynniki funkcji kwadratowej
+        public virtual void SetCoefficients(double a, double b, double c)
+        {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+
+        // Metoda obliczająca pochodną funkcji kwadratowej
+        public void CalculateDerivative()
+        {
+            Console.WriteLine("Pochodna funkcji kwadratowej: " + (2 * a) + "x + " + b);
+        }
+    }
+
+    // Klasa obsługująca obliczanie miejsc zerowych funkcji kwadratowej
+    class QuadraticRootCalculator
+    {
+        private double a;
+        private double b;
+        private double c;
+
+        // Metoda ustawiająca współczynniki funkcji kwadratowej
+        public void SetCoefficients(double a, double b, double c)
+        {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+
+        // Metoda obliczająca miejsca zerowe funkcji kwadratowej
+        public void CalculateQuadraticRoots()
+        {
+            double discriminant = b * b - 4 * a * c;
+
+            if (discriminant > 0)
+            {
+                double root1 = (-b + Math.Sqrt(discriminant)) / (2 * a);
+                double root2 = (-b - Math.Sqrt(discriminant)) / (2 * a);
+                Console.WriteLine("Miejsca zerowe: root1 = " + root1 + ", root2 = " + root2);
+            }
+            else if (discriminant == 0)
+            {
+                double root = -b / (2 * a);
+                Console.WriteLine("Miejsce zerowe (jedno): root = " + root);
+            }
+            else
+            {
+                Console.WriteLine("Brak miejsc zerowych dla funkcji kwadratowej.");
+            }
+        }
+    }
+
+    // Klasa reprezentująca kalkulator dla drugiej pochodnej funkcji kwadratowej
+    class SecondDegreeDerivativeCalculator : DerivativeCalculator
+    {
+        // Przesłonięta metoda ustawiająca współczynniki funkcji kwadratowej
+        public override void SetCoefficients(double a, double b, double c)
+        {
+            base.SetCoefficients(a, b, c);
+        }
+
+        // Metoda obliczająca drugą pochodną funkcji kwadratowej
+        public void CalculateSecondDegreeDerivative()
+        {
+            Console.WriteLine("Druga pochodna funkcji kwadratowej: " + (2 * a));
+        }
+    }
+
+    // Klasa Program jako singleton
+    class Program
+    {
+        private static Program _instance;
+
+        // Prywatny konstruktor zapewniający, że nie można utworzyć więcej niż jednej instancji Program
+        private Program() { }
+
+        // Metoda do uzyskiwania instancji Program (singleton)
+        public static Program Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new Program();
+                }
+                return _instance;
+            }
+        }
+
+        // Metoda pomocnicza do pobierania liczby od użytkownika
+        private double GetInput()
+        {
+            if (!double.TryParse(Console.ReadLine(), out double input))
+                throw new Exception("Podana wartość nie jest liczbą.\n");
+
+            return input;
+        }
+
+        // Metoda obliczająca wynik dla operacji arytmetycznych
+        private double Calculate(double number1, double number2, string operation)
+        {
+            switch (operation)
+            {
+                case "+":
+                    return number1 + number2;
+                case "-":
+                    return number1 - number2;
+                case "*":
+                    return number1 * number2;
+                case "/":
+                    return number1 / number2;
+                case "2k":
+                    return 1;
+                default:
+                    throw new Exception("Wybrałeś złą operację!\n");
+            }
+        }
+
+        // Metoda główna programu
+        public void Run()
+        {
+            Console.WriteLine("Witaj w aplikacji KALKULATOR!");
+            string Działanie = "T";
+            while (Działanie == "t" || Działanie == "T")
+            {
+                try
+                {
+                    Console.WriteLine("Jaką operację chcesz wykonać? Możliwe operacje to: '+', '-', '*', '/', '2k'.");
+                    var operation = Console.ReadLine();
+                    if (operation == "2k")
+                    {
+                        Console.WriteLine("Podaj współczynniki funkcji kwadratowej (a, b, c):");
+
+                        double a = Convert.ToDouble(Console.ReadLine());
+                        double b = Convert.ToDouble(Console.ReadLine());
+                        double c = Convert.ToDouble(Console.ReadLine());
+
+                        DerivativeCalculator derivativeCalculator = new DerivativeCalculator();
+                        QuadraticRootCalculator quadraticRootCalculator = new QuadraticRootCalculator();
+                        SecondDegreeDerivativeCalculator secondDegreeDerivativeCalculator = new SecondDegreeDerivativeCalculator();
+
+                        derivativeCalculator.SetCoefficients(a, b, c);
+                        quadraticRootCalculator.SetCoefficients(a, b, c);
+
+                        Console.WriteLine("Wybierz funkcję:");
+                        Console.WriteLine("1. Oblicz pochodną funkcji kwadratowej");
+                        Console.WriteLine("2. Oblicz miejsca zerowe funkcji kwadratowej");
+                        Console.WriteLine("3. Oblicz drugą pochodną funkcji kwadratowej");
+
+                        int choice = Convert.ToInt32(Console.ReadLine());
+
+                        switch (choice)
+                        {
+                            case 1:
+                                derivativeCalculator.CalculateDerivative();
+                                break;
+                            case 2:
+                                quadraticRootCalculator.CalculateQuadraticRoots();
+                                break;
+                            case 3:
+                                secondDegreeDerivativeCalculator.SetCoefficients(a, b, c);
+                                secondDegreeDerivativeCalculator.CalculateSecondDegreeDerivative();
+                                break;
+                            default:
+                                Console.WriteLine("Niepoprawny wybór.");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Podaj proszę 1 liczbę:");
+                        var number1 = GetInput();
+
+                        Console.WriteLine("Podaj proszę 2 liczbę:");
+                        var number2 = GetInput();
+                         var result = Calculate(number1, number2, operation);
+
+                        Console.WriteLine($"Wynik Twojego działania to: {Math.Round(result, 2)}.\n");
+                    }
+
+                    Console.WriteLine("Czy chcesz zakończyć (T/N): ");
+                    Działanie = Console.ReadLine();
+
+                }
+                catch (Exception ex)
+                {
+                    // logowanie do pliku
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        // Metoda główna programu
+        static void Main(string[] args)
+        {
+            // Uzyskanie instancji Program (singleton)
+            Program program = Program.Instance;
+
+            // Uruchomienie programu
+            program.Run();
+        }
+    }
+}
